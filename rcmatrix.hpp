@@ -8,15 +8,15 @@
 using namespace std;
 
 class file_error : public exception {
-  virtual const char* what() const throw() { return "nie mozna odczytac pliku"; }
+  virtual const char* what() const throw() { return "Wystąpił problem z wczytaniem macierzy z pliku."; }
 };
 
 class wrong_matrix_error : public exception {
-  virtual const char* what() const throw() { return "nieprawidlowe wymiary macierzy"; }
+  virtual const char* what() const throw() { return "Macierze nie sa takie same."; }
 };
 
 class out_of_index_error : public exception {
-  virtual const char* what() const throw() { return "podano nieprawidlowa komorke macierzy"; }
+  virtual const char* what() const throw() { return "Wyszedles poza macierz."; }
 };
 
 
@@ -40,11 +40,12 @@ public:
   rcmatrix operator- (const rcmatrix&) const;
   rcmatrix& operator*= (const rcmatrix&);
   rcmatrix operator* (const rcmatrix&) const;
-  Cref operator() (unsigned int,unsigned int);
+  Cref operator() (int,int);
   friend std::ostream & operator << (std::ostream & , const rcmatrix &);
-  double read(unsigned int, unsigned int) const;
-  void write(unsigned int, unsigned int, double);
+  double read(int, int) const;
+  void write(int, int, double);
 };
+
 
 struct rcmatrix::matrix
 {
@@ -92,9 +93,9 @@ struct rcmatrix::matrix
       //abort(); //tutaj dodaj obsluge bledu
     }
     file >> ver;
-    //cout << ver << endl;
+    cout <<"konstruktor ver: " << ver << endl;
     file >> col;
-    //cout << col << endl;
+    cout <<"konstruktor col: " << col << endl;
     data = new double[ver*col];
 
 
@@ -134,7 +135,7 @@ class rcmatrix::Cref
   rcmatrix& m;
   int i, j;
   public:
-    Cref (rcmatrix& mm, unsigned int ii, unsigned int jj): m(mm), i(ii), j(jj) {};
+    Cref (rcmatrix& mm, int ii, int jj): m(mm), i(ii), j(jj) {};
    //double operator()(unsigned int,unsigned int) const;
    operator double();
    rcmatrix::Cref& operator=(double);
