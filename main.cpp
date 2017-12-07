@@ -16,8 +16,9 @@ int main()
    xd*=ss;
    cout << endl << xd << endl;
    xs = xd * ss;
+   rcmatrix dd = xs * ss + xd;
    //xs(1,1) = 26;
-  cout <<xs <<  endl << xd << endl << ss << endl;
+  cout <<xs <<  endl << xd << endl << ss << endl << dd << endl;
 } catch(exception& e) {
   cout << "Wystapil blad - " << e.what() << endl;
 } catch(...) {
