@@ -83,10 +83,7 @@ void rcmatrix::matrix::sub(const struct matrix* M1)
 
 void rcmatrix::matrix::mul(const struct matrix* M1)
 {
-  cout << "xd" << endl;
-  cout << "kolumna this: "<< this->col << "  " << "wiersz m1: "<< M1->ver << endl;
-  cout << "wiersza this: " <<this-> ver << "  " << "kolumna m1: " << M1-> col << endl;
-  if(this->col == M1->ver)
+  if(this->col == M1->ver && this->ver == M1->col)
   {
     matrix* temp = new matrix(this->ver, M1->col);
     for(int i = 0; i < this->ver; i++)
@@ -119,7 +116,7 @@ rcmatrix::matrix* rcmatrix::matrix::detach()
   rcmatrix::matrix* m=new matrix(ver,col,data);
   n--;
   return m;
-}
+};
 
 rcmatrix& rcmatrix::operator=(const rcmatrix& MAT)
 {
@@ -155,10 +152,7 @@ rcmatrix& rcmatrix::operator-=(const rcmatrix& MAT)
 
 rcmatrix& rcmatrix::operator*=(const rcmatrix& MAT)
 {
-  cout << endl << "Jestem w operator*=" << endl << "wiersza MAT: "<< MAT.macierz->ver << endl << "kolumna mat: " << MAT.macierz->col << endl;
-
   matrix *nowa_macierz = new matrix(macierz->ver, MAT.macierz->col, macierz->data);
-  cout << endl << "Jestem w operator*=2 " << endl << "wiersza MAT: "<< nowa_macierz->ver << endl << "kolumna mat: " << nowa_macierz->col << endl;
   nowa_macierz->mul(MAT.macierz);
   if (--macierz->n == 0)
     delete macierz;
@@ -168,17 +162,20 @@ rcmatrix& rcmatrix::operator*=(const rcmatrix& MAT)
 
 rcmatrix rcmatrix::operator*(const rcmatrix& MAT) const
 {
-  rcmatrix temp = *this;
-  temp *= MAT;
-  return temp;
+  rcmatrix MAT2 = (rcmatrix&) MAT;
+  MAT2 *= *this;
+  return MAT2;
 }
 
 rcmatrix rcmatrix::operator+(const rcmatrix& MAT) const
 {
-  rcmatrix temp(*this);
+  rcmatrix temp(MAT);
 
-  temp+=MAT;
+  temp.macierz->add(MAT.macierz);
   cout << "Wykonuje operator+" << endl;
+  //temp.macierz->n--;
+  //MAT.macierz->n--;
+  //macierz->n--;
   return temp;
 }
 
@@ -187,23 +184,23 @@ rcmatrix rcmatrix::operator+(const rcmatrix& MAT) const
 
 rcmatrix rcmatrix::operator-(const rcmatrix& MAT) const
 {
- rcmatrix temp(*this);
+  rcmatrix MAT2 = (rcmatrix&) MAT;
+ //MAT2.macierz = macierz;
+ MAT2 -= MAT;
 
- temp-=MAT;
- cout << "Wykonuje operator-" << endl;
 
- return temp;
+  return MAT2;
 }
 
 
 
-double rcmatrix::read(int i, int j) const
+double rcmatrix::read(unsigned int i, unsigned int j) const
 {
  if(i < 0 || i > macierz->ver || j < 0 || j > macierz->col) throw out_of_index_error();
  return macierz->data[i*macierz->col+j];
 }
 
-void rcmatrix::write(int i, int j, double k)
+void rcmatrix::write(unsigned int i, unsigned int j, double k)
 {
  if(i < 0 || i > macierz->ver || j < 0 || j > macierz->col) throw out_of_index_error();
  this->macierz = this->macierz->detach();
@@ -212,7 +209,10 @@ void rcmatrix::write(int i, int j, double k)
 
 
 
-
+/*double rcmatrix::Cref::operator()(unsigned int ii, unsigned int jj) const
+{
+  return m.read(ii,jj);
+}*/
 
 rcmatrix::Cref::operator double() {
   return m.read(i,j);
@@ -223,7 +223,7 @@ rcmatrix::Cref& rcmatrix::Cref::operator=(double d) {
   return *this;
 }
 
-rcmatrix::Cref rcmatrix::operator()(int i,int j)
+rcmatrix::Cref rcmatrix::operator()(unsigned int i,unsigned int j)
 {
   return Cref(*this,i,j);
 }

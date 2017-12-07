@@ -8,15 +8,15 @@
 using namespace std;
 
 class file_error : public exception {
-  virtual const char* what() const throw() { return "Wystąpił problem z wczytaniem macierzy z pliku."; }
+  virtual const char* what() const throw() { return "dane na twoim dysku stracily rownowage"; }
 };
 
 class wrong_matrix_error : public exception {
-  virtual const char* what() const throw() { return "Macierze nie sa takie same."; }
+  virtual const char* what() const throw() { return "przeladowanie bitami"; }
 };
 
 class out_of_index_error : public exception {
-  virtual const char* what() const throw() { return "Wyszedles poza macierz."; }
+  virtual const char* what() const throw() { return "laser bluray wypalil dziure w instalacji LPG"; }
 };
 
 
@@ -40,12 +40,11 @@ public:
   rcmatrix operator- (const rcmatrix&) const;
   rcmatrix& operator*= (const rcmatrix&);
   rcmatrix operator* (const rcmatrix&) const;
-  Cref operator() (int,int);
+  Cref operator() (unsigned int,unsigned int);
   friend std::ostream & operator << (std::ostream & , const rcmatrix &);
-  double read(int, int) const;
-  void write(int, int, double);
+  double read(unsigned int, unsigned int) const;
+  void write(unsigned int, unsigned int, double);
 };
-
 
 struct rcmatrix::matrix
 {
@@ -93,9 +92,9 @@ struct rcmatrix::matrix
       //abort(); //tutaj dodaj obsluge bledu
     }
     file >> ver;
-    cout <<"konstruktor ver: " << ver << endl;
+    //cout << ver << endl;
     file >> col;
-    cout <<"konstruktor col: " << col << endl;
+    //cout << col << endl;
     data = new double[ver*col];
 
 
@@ -135,7 +134,7 @@ class rcmatrix::Cref
   rcmatrix& m;
   int i, j;
   public:
-    Cref (rcmatrix& mm, int ii, int jj): m(mm), i(ii), j(jj) {};
+    Cref (rcmatrix& mm, unsigned int ii, unsigned int jj): m(mm), i(ii), j(jj) {};
    //double operator()(unsigned int,unsigned int) const;
    operator double();
    rcmatrix::Cref& operator=(double);
