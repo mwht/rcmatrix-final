@@ -27,10 +27,10 @@ rcmatrix::rcmatrix(const rcmatrix& rc) {
 }
 
 rcmatrix::~rcmatrix() {
-  cout << "USUWAM: " << macierz->n << endl;
+  // cout << "USUWAM: " << macierz->n << endl;
 	if (--macierz->n == 0)
   {
-    cout << "Jestem wywoływany"  << endl;
+    // cout << "Jestem wywoływany"  << endl;
 		delete macierz;
   }
 }
@@ -60,7 +60,8 @@ void rcmatrix::matrix::add(const struct matrix* M1)
   }
   else
   {
-    cout << "Macierze nie są takie same!!" << endl;
+    //cout << "Macierze nie są takie same!!" << endl;
+    throw wrong_matrix_error();
   }
 }
 
@@ -75,9 +76,47 @@ void rcmatrix::matrix::sub(const struct matrix* M1)
   }
   else
   {
-    cout << "Macierze nie są takie same!!" << endl;
+    //cout << "Macierze nie są takie same!!" << endl;
+    throw wrong_matrix_error();
   }
 }
+
+void rcmatrix::matrix::mul(const struct matrix* M1)
+{
+  if(this->col == M1->ver && this->ver == M1->col)
+  {
+    matrix* temp = new matrix(this->ver, M1->col);
+    for(int i = 0; i < this->ver; i++)
+    {
+      for(int j = 0; j < M1->col; j++)
+      {
+        double wynik = 0;
+        //cout << this->data[i*this->col+j] << " ";
+        for(int k = 0;k<this->col; k++)
+        {
+           wynik += this->data[i*this->col+k] * M1->data[k*this->col+j];
+        }
+        temp->data[i*this->col+j] = wynik;
+      }
+    }
+    for(int i = 0; i < this->ver; i++)
+      for(int j = 0; j < M1->col; j++)
+        this->data[i*this->col+j] = temp->data[i*this->col+j];
+    delete temp;
+  }
+  else{
+    throw wrong_matrix_error();
+  }
+}
+
+rcmatrix::matrix* rcmatrix::matrix::detach()
+{
+  if(n==1)
+    return this;
+  rcmatrix::matrix* m=new matrix(ver,col,data);
+  n--;
+  return m;
+};
 
 rcmatrix& rcmatrix::operator=(const rcmatrix& MAT)
 {
@@ -111,6 +150,23 @@ rcmatrix& rcmatrix::operator-=(const rcmatrix& MAT)
   return *this;
 }
 
+rcmatrix& rcmatrix::operator*=(const rcmatrix& MAT)
+{
+  matrix *nowa_macierz = new matrix(macierz->ver, MAT.macierz->col, macierz->data);
+  nowa_macierz->mul(MAT.macierz);
+  if (--macierz->n == 0)
+    delete macierz;
+  macierz = nowa_macierz;
+  return *this;
+}
+
+rcmatrix rcmatrix::operator*(const rcmatrix& MAT) const
+{
+  rcmatrix MAT2 = (rcmatrix&) MAT;
+  MAT2 *= *this;
+  return MAT2;
+}
+
 rcmatrix rcmatrix::operator+(const rcmatrix& MAT) const
 {
   rcmatrix temp(MAT);
@@ -138,14 +194,16 @@ rcmatrix rcmatrix::operator-(const rcmatrix& MAT) const
 
 
 
-
 double rcmatrix::read(unsigned int i, unsigned int j) const
 {
+ if(i < 0 || i > macierz->ver || j < 0 || j > macierz->col) throw out_of_index_error();
  return macierz->data[i*macierz->col+j];
 }
 
 void rcmatrix::write(unsigned int i, unsigned int j, double k)
 {
+ if(i < 0 || i > macierz->ver || j < 0 || j > macierz->col) throw out_of_index_error();
+ this->macierz = this->macierz->detach();
  macierz->data[i*macierz->col+j] = k;
 }
 

@@ -3,8 +3,22 @@
 #include <iostream>
 #include <fstream>
 #include <stdio.h>
+#include <exception>
 
 using namespace std;
+
+class file_error : public exception {
+  virtual const char* what() const throw() { return "dane na twoim dysku stracily rownowage"; }
+};
+
+class wrong_matrix_error : public exception {
+  virtual const char* what() const throw() { return "przeladowanie bitami"; }
+};
+
+class out_of_index_error : public exception {
+  virtual const char* what() const throw() { return "laser bluray wypalil dziure w instalacji LPG"; }
+};
+
 
 class rcmatrix
 {
@@ -24,6 +38,8 @@ public:
   rcmatrix operator+ (const rcmatrix&) const;
   rcmatrix& operator-= (const rcmatrix&);
   rcmatrix operator- (const rcmatrix&) const;
+  rcmatrix& operator*= (const rcmatrix&);
+  rcmatrix operator* (const rcmatrix&) const;
   Cref operator() (unsigned int,unsigned int);
   friend std::ostream & operator << (std::ostream & , const rcmatrix &);
   double read(unsigned int, unsigned int) const;
@@ -71,10 +87,10 @@ struct rcmatrix::matrix
     file.open(nameFile,ios::in);
     if(file.good() == 0)
     {
-      cout << "Blad otwarcia pliku" << endl;
+      //cout << "Blad otwarcia pliku" << endl;
+      throw file_error();
       //abort(); //tutaj dodaj obsluge bledu
     }
-
     file >> ver;
     //cout << ver << endl;
     file >> col;
@@ -101,13 +117,14 @@ struct rcmatrix::matrix
   }
 
   ~matrix() {
-    cout << "Jestem destruktorem w matrixie" << endl;
+    // cout << "Jestem destruktorem w matrixie" << endl;
 	  delete[] data;
   }
 
   void add(const struct matrix*);
   void sub(const struct matrix*);
-
+  void mul(const struct matrix*);
+  matrix* detach();
 };
 
 
