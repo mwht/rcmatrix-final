@@ -19,9 +19,9 @@ int main()
    //xs(1,1) = 26;
   cout <<xs <<  endl << xd << endl << ss << endl;
 } catch(exception& e) {
-  cout << "ZJEBALO SIE - " << e.what() << endl;
+  cout << "Wystapil blad - " << e.what() << endl;
 } catch(...) {
-  cout << "o panie kto tu panu tak spierdolil..." << endl;
+  cout << "Wystapil nieznany blad." << endl;
 }
   return 0;
 }

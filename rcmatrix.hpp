@@ -8,15 +8,15 @@
 using namespace std;
 
 class file_error : public exception {
-  virtual const char* what() const throw() { return "dane na twoim dysku stracily rownowage"; }
+  virtual const char* what() const throw() { return "nie mozna odczytac pliku"; }
 };
 
 class wrong_matrix_error : public exception {
-  virtual const char* what() const throw() { return "przeladowanie bitami"; }
+  virtual const char* what() const throw() { return "nieprawidlowe wymiary macierzy"; }
 };
 
 class out_of_index_error : public exception {
-  virtual const char* what() const throw() { return "laser bluray wypalil dziure w instalacji LPG"; }
+  virtual const char* what() const throw() { return "podano nieprawidlowa komorke macierzy"; }
 };
 
 
