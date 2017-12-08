@@ -8,15 +8,15 @@
 using namespace std;
 
 class file_error : public exception {
-  virtual const char* what() const throw() { return "dane na twoim dysku stracily rownowage"; }
+  virtual const char* what() const throw() { return "Wystąpił problem z wczytaniem macierzy z pliku."; }
 };
 
 class wrong_matrix_error : public exception {
-  virtual const char* what() const throw() { return "przeladowanie bitami"; }
+  virtual const char* what() const throw() { return "Macierze nie sa takie same."; }
 };
 
 class out_of_index_error : public exception {
-  virtual const char* what() const throw() { return "laser bluray wypalil dziure w instalacji LPG"; }
+  virtual const char* what() const throw() { return "Wyszedles poza macierz."; }
 };
 
 
@@ -24,10 +24,8 @@ class rcmatrix
 {
 private:
   struct matrix;
-
-
-public:
   matrix *macierz;
+public:
   class Cref;
   rcmatrix();
   rcmatrix(const char*);
@@ -40,11 +38,12 @@ public:
   rcmatrix operator- (const rcmatrix&) const;
   rcmatrix& operator*= (const rcmatrix&);
   rcmatrix operator* (const rcmatrix&) const;
-  Cref operator() (unsigned int,unsigned int);
+  Cref operator() (int,int);
   friend std::ostream & operator << (std::ostream & , const rcmatrix &);
-  double read(unsigned int, unsigned int) const;
-  void write(unsigned int, unsigned int, double);
+  double read(int, int) const;
+  void write(int, int, double);
 };
+
 
 struct rcmatrix::matrix
 {
@@ -82,31 +81,19 @@ struct rcmatrix::matrix
 
   matrix(const char* nameFile)
   {
-    //cout << "123123123123";
     fstream file;
     file.open(nameFile,ios::in);
     if(file.good() == 0)
     {
-      //cout << "Blad otwarcia pliku" << endl;
       throw file_error();
-      //abort(); //tutaj dodaj obsluge bledu
     }
     file >> ver;
-    //cout << ver << endl;
     file >> col;
-    //cout << col << endl;
     data = new double[ver*col];
-
-
-    for(int i=0;i<ver;i++){
+    for(int i=0;i<ver;i++)
       for(int j=0;j<col;j++)
-      {
-        // cout << file;
         file >> data[i*col+j];
-
-      }
-      }
-	n = 1;
+	  n = 1;
   }
 
   matrix(int m_ver,int m_col) {
@@ -117,13 +104,12 @@ struct rcmatrix::matrix
   }
 
   ~matrix() {
-    // cout << "Jestem destruktorem w matrixie" << endl;
 	  delete[] data;
   }
 
   void add(const struct matrix*);
   void sub(const struct matrix*);
-  void mul(const struct matrix*);
+  void mul(const struct matrix*, const struct matrix*);
   matrix* detach();
 };
 
@@ -134,8 +120,7 @@ class rcmatrix::Cref
   rcmatrix& m;
   int i, j;
   public:
-    Cref (rcmatrix& mm, unsigned int ii, unsigned int jj): m(mm), i(ii), j(jj) {};
-   //double operator()(unsigned int,unsigned int) const;
+   Cref (rcmatrix& mm, int ii, int jj): m(mm), i(ii), j(jj) {};
    operator double();
    rcmatrix::Cref& operator=(double);
 };
