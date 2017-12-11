@@ -7,9 +7,9 @@ rcmatrix::rcmatrix() {
   mat = new matrix();
 }
 
-rcmatrix::rcmatrix(const char* fname)
+rcmatrix::rcmatrix(const char* path)
 {
-  mat = new matrix(fname);
+  mat = new matrix(path);
 }
 
 rcmatrix::rcmatrix(const rcmatrix& rc) {
