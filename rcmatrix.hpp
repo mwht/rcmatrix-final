@@ -8,15 +8,15 @@
 using namespace std;
 
 class file_error : public exception {
-  virtual const char* what() const throw() { return "Wystąpił problem z wczytaniem macierzy z pliku."; }
+  virtual const char* what() const throw() { return "nie mozna wczytac macierzy z pliku"; }
 };
 
 class wrong_matrix_error : public exception {
-  virtual const char* what() const throw() { return "Macierze nie sa takie same."; }
+  virtual const char* what() const throw() { return "nieprawidlowy rozmiar macierzy"; }
 };
 
 class out_of_index_error : public exception {
-  virtual const char* what() const throw() { return "Wyszedles poza macierz."; }
+  virtual const char* what() const throw() { return "nieprawidlowy adres komorki macierzy"; }
 };
 
 
@@ -49,31 +49,31 @@ struct rcmatrix::matrix
 {
   double *data;
   int n;
-  int ver,col;
+  int rows,cols;
   matrix()
   {
-    ver = 0;
-    col = 0;
+    rows = 0;
+    cols = 0;
     data = NULL;
     n = 1;
 
   }
 
-  matrix(int m_ver, int m_col, double* source) {
+  matrix(int m_rows, int m_cols, double* source) {
 	  if (source != NULL) {
-		  ver = m_ver;
-		  col = m_col;
-		  data = new double[ver*col];
-		  for (int i = 0; i < ver; i++) {
-			  for (int j = 0; j < col; j++) {
-				  data[i*col + j] = source[i*col + j];
+		  rows = m_rows;
+		  cols = m_cols;
+		  data = new double[rows*cols];
+		  for (int i = 0; i < rows; i++) {
+			  for (int j = 0; j < cols; j++) {
+				  data[i*cols + j] = source[i*cols + j];
 			  }
 		  }
 		  n = 1;
 	  }
 	  else {
-		  ver = 0;
-		  col = 0;
+		  rows = 0;
+		  cols = 0;
 		  data = NULL;
 		  n = 1;
 	  }
@@ -87,19 +87,19 @@ struct rcmatrix::matrix
     {
       throw file_error();
     }
-    file >> ver;
-    file >> col;
-    data = new double[ver*col];
-    for(int i=0;i<ver;i++)
-      for(int j=0;j<col;j++)
-        file >> data[i*col+j];
-	  n = 1;
+    file >> rows;
+    file >> cols;
+    data = new double[rows*cols];
+    for(int i=0;i<rows;i++)
+      for(int j=0;j<cols;j++)
+        file >> data[i*cols+j];
+    n = 1;
   }
 
-  matrix(int m_ver,int m_col) {
-    ver = m_ver;
-    col = m_col;
-    data = new double [ver*col];
+  matrix(int m_rows,int m_cols) {
+    rows = m_rows;
+    cols = m_cols;
+    data = new double [*cols];
     n = 1;
   }
 

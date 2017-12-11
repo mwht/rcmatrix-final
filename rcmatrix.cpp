@@ -3,9 +3,7 @@
 
 using namespace std;
 
-//------------------- rcmatrix -------------------
-rcmatrix::rcmatrix()
-{
+rcmatrix::rcmatrix() {
   macierz = new matrix();
 }
 
