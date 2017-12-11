@@ -1,5 +1,5 @@
-#ifndef MATRIX
-#define MATRIX
+#ifndef _RCMATRIX_H_
+#define _RCMATRIX_H_
 #include <iostream>
 #include <fstream>
 #include <stdio.h>
@@ -24,7 +24,7 @@ class rcmatrix
 {
 private:
   struct matrix;
-  matrix *macierz;
+  matrix *mat;
 public:
   class Cref;
   rcmatrix();
@@ -99,7 +99,7 @@ struct rcmatrix::matrix
   matrix(int m_rows,int m_cols) {
     rows = m_rows;
     cols = m_cols;
-    data = new double [*cols];
+    data = new double [rows*cols];
     n = 1;
   }
 
@@ -127,4 +127,4 @@ class rcmatrix::Cref
 
 
 
-#endif
+#endif // _RCMATRIX_H_

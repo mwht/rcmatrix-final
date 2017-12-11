@@ -4,47 +4,46 @@
 using namespace std;
 
 rcmatrix::rcmatrix() {
-  macierz = new matrix();
+  mat = new matrix();
 }
 
-rcmatrix::rcmatrix(const char* nameFile)
+rcmatrix::rcmatrix(const char* fname)
 {
-  macierz = new matrix(nameFile);
+  mat = new matrix(fname);
 }
 
 rcmatrix::rcmatrix(const rcmatrix& rc) {
-  rc.macierz->n++;
-  macierz = rc.macierz;
+  rc.mat->n++;
+  mat = rc.mat;
 }
 
 rcmatrix::~rcmatrix() {
-	if (--macierz->n == 0)
-  {
-		delete macierz;
-  }
+	if (--mat->n == 0) {
+		delete mat;
+  	}
 }
 
 double rcmatrix::read(int i, int j) const
 {
- if(i < 0 || i > macierz->ver || j < 0 || j > macierz->col) throw out_of_index_error();
- return macierz->data[i*macierz->col+j];
+ if(i < 0 || i > mat->rows || j < 0 || j > mat->cols) throw out_of_index_error();
+ return mat->data[i*mat->cols+j];
 }
 
 void rcmatrix::write(int i, int j, double k)
 {
- if(i < 0 || i > macierz->ver || j < 0 || j > macierz->col) throw out_of_index_error();
- this->macierz = this->macierz->detach();
- macierz->data[i*macierz->col+j] = k;
+ if(i < 0 || i > mat->rows || j < 0 || j > mat->cols) throw out_of_index_error();
+ mat = mat->detach();
+ mat->data[i*mat->cols+j] = k;
 }
 
 
 std::ostream & operator << (std::ostream & s, const rcmatrix & M)
 {
-  for(int i = 0; i < M.macierz->ver;i++)
+  for(int i = 0; i < M.mat->rows;i++)
   {
-    for(int j = 0; j< M.macierz->col;j++)
+    for(int j = 0; j< M.mat->cols;j++)
     {
-      cout << M.macierz->data[i*M.macierz->col+j] << " ";
+      cout << M.mat->data[i*M.mat->cols+j] << " ";
     }
       cout << "\n";
   }
@@ -54,24 +53,21 @@ std::ostream & operator << (std::ostream & s, const rcmatrix & M)
 
 rcmatrix& rcmatrix::operator=(const rcmatrix& MAT)
 {
-  // if(this->macierz == MAT.macierz)
-  //   return *this;
 
-  if(--this->macierz->n == 0)
-    delete this->macierz;
-  this->macierz = MAT.macierz;
-  this->macierz->n++;
+  if(--mat->n == 0)
+    delete mat;
+  mat = MAT.mat;
+  mat->n++;
   return *this;
 }
 
-//------------------- operator + i += -------------------
 rcmatrix& rcmatrix::operator+=(const rcmatrix& MAT)
 {
-  matrix* nowa_macierz = new matrix(macierz->ver, macierz->col, macierz->data);
-  nowa_macierz->add(MAT.macierz);
-  if (--macierz->n == 0)
-	  delete macierz;
-  macierz = nowa_macierz;
+  matrix* new_matrix = new matrix(mat->rows, mat->cols, mat->data);
+  new_matrix->add(MAT.mat);
+  if (--mat->n == 0)
+	  delete mat;
+  mat = new_matrix;
   return *this;
 }
 
@@ -82,14 +78,13 @@ rcmatrix rcmatrix::operator+(const rcmatrix& MAT) const
   return temp;
 }
 
-//------------------- operator - i -= -------------------
 rcmatrix& rcmatrix::operator-=(const rcmatrix& MAT)
 {
-  matrix *nowa_macierz = new matrix(macierz->ver, macierz->col, macierz->data);
-  nowa_macierz->sub(MAT.macierz);
-  if (--macierz->n == 0)
-	  delete macierz;
-  macierz = nowa_macierz;
+  matrix *new_matrix = new matrix(mat->rows, mat->cols, mat->data);
+  new_matrix->sub(MAT.mat);
+  if (--mat->n == 0)
+	  delete mat;
+  mat = new_matrix;
   return *this;
 }
 
@@ -100,14 +95,13 @@ rcmatrix rcmatrix::operator-(const rcmatrix& MAT) const
  return temp;
 }
 
-//------------------- operator - i -= -------------------
 rcmatrix& rcmatrix::operator*=(const rcmatrix& MAT)
 {
-  matrix *nowa_macierz = new matrix(macierz->ver, MAT.macierz->col);
-  nowa_macierz->mul(macierz, MAT.macierz);
-  if (--macierz->n == 0)
-    delete macierz;
-  macierz = nowa_macierz;
+  matrix *new_matrix = new matrix(mat->rows, MAT.mat->cols);
+  new_matrix->mul(mat, MAT.mat);
+  if (--mat->n == 0)
+    delete mat;
+  mat = new_matrix;
   return *this;
 }
 
@@ -117,16 +111,15 @@ rcmatrix rcmatrix::operator*(const rcmatrix& MAT) const
   temp *= MAT;
   return temp;
 }
-//--------------------------------------
 
 //------------------- rcmatrix::matrix -------------------
 void rcmatrix::matrix::add(const struct matrix* M1)
 {
-  if(this->col == M1->col && this->ver == M1->ver)
+  if(cols == M1->cols && rows == M1->rows)
   {
-    for(int i = 0; i < col;i++)
-      for(int j = 0; j < ver; j++)
-        this->data[i*col+j] += M1->data[i*col+j];
+    for(int i = 0; i < cols;i++)
+      for(int j = 0; j < rows; j++)
+        data[i*cols+j] += M1->data[i*cols+j];
   }
   else
   {
@@ -137,11 +130,11 @@ void rcmatrix::matrix::add(const struct matrix* M1)
 
 void rcmatrix::matrix::sub(const struct matrix* M1)
 {
-  if(this->col == M1->col && this->ver == M1->ver)
+  if(cols == M1->cols && rows == M1->rows)
   {
-    for(int i = 0; i < col;i++)
-      for(int j = 0; j < ver; j++)
-        this->data[i*col+j] -= M1->data[i*col+j];
+    for(int i = 0; i < cols;i++)
+      for(int j = 0; j < rows; j++)
+        data[i*cols+j] -= M1->data[i*cols+j];
   }
   else
   {
@@ -151,24 +144,24 @@ void rcmatrix::matrix::sub(const struct matrix* M1)
 
 void rcmatrix::matrix::mul(const struct matrix* M1, const struct matrix* M2)
 {
-  if(M1->col == M2->ver && M1->ver == M2->col)
+  if(M1->cols == M2->rows && M1->rows == M2->cols)
   {
-    matrix* temp = new matrix(M1->ver, M2->col);
-    for(int i = 0; i < M1->ver; i++)
+    matrix* temp = new matrix(M1->rows, M2->cols);
+    for(int i = 0; i < M1->rows; i++)
     {
-      for(int j = 0; j < M2->col; j++)
+      for(int j = 0; j < M2->cols; j++)
       {
         double wynik = 0;
-        for(int k = 0;k<M1->col; k++)
+        for(int k = 0;k<M1->cols; k++)
         {
-           wynik += M1->data[i*M1->col+k] * M2->data[k*M2->col+j];
+           wynik += M1->data[i*M1->cols+k] * M2->data[k*M2->cols+j];
         }
-        temp->data[i*this->col+j] = wynik;
+        temp->data[i*cols+j] = wynik;
       }
     }
-    for(int i = 0; i < this->ver; i++)
-      for(int j = 0; j < this->col; j++)
-        this->data[i*this->col+j] = temp->data[i*this->col+j];
+    for(int i = 0; i < rows; i++)
+      for(int j = 0; j < cols; j++)
+        data[i*cols+j] = temp->data[i*cols+j];
     delete temp;
   }
   else{
@@ -180,7 +173,7 @@ rcmatrix::matrix* rcmatrix::matrix::detach()
 {
   if(n==1)
     return this;
-  rcmatrix::matrix* m=new matrix(ver,col,data);
+  rcmatrix::matrix* m=new matrix(rows,cols,data);
   n--;
   return m;
 }
