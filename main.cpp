@@ -18,7 +18,6 @@ int main()
    cout << "--- + i - ---" << endl;
    cout << (F = D + E) <<  endl;
    cout << (F = E - D) <<  endl;
-   cout << (D += E) << endl;
    cout << "--- += i -= ---" << endl;
    cout << (D += E) << endl;
    cout << (E -= D) << endl;
