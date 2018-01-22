@@ -29,14 +29,6 @@ double rcmatrix::read(int i, int j) const
  return mat->data[i*mat->cols+j];
 }
 
-
-/*
-detach zmniejsza licznik w starej macierzy
- (poniewaz to nie jest juz ta sama macierz do ktorej sie odwolujemy)
-i tworzy jej kopie z wartoscia licznika 1
-(poniewaz odwolujemy sie do NOWEJ MACIERZY pierwszy raz)
-*/
-
 void rcmatrix::write(int i, int j, double k)
 {
  if(i < 0 || i > mat->rows || j < 0 || j > mat->cols) throw out_of_index_error();
@@ -65,7 +57,7 @@ rcmatrix& rcmatrix::operator=(const rcmatrix& MAT)
   if(--mat->n == 0)
     delete mat;
   mat = MAT.mat;
-  MAT.mat->n++;
+  mat->n++;
   return *this;
 }
 
